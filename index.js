@@ -154,7 +154,7 @@ io?.on("connection", socket => {
 })
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', "*"],
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 }))
@@ -170,4 +170,10 @@ db.authenticate().then(() => {
 
 server.listen(port, () => {
     console.log(`App listen on port ${port}`);
+})
+
+app.get("/", (req, res)=>{
+    res.status(200).json({
+        msg : "Wellcome to my simple API"
+    })
 })
