@@ -35,14 +35,14 @@ const getUser = (username) => {
 }
 
 io?.on("connection", socket => {
-    socket?.on("upload", user=>{
+    socket?.on("upload", user => {
         console.log(`${user} is ready to upload`);
     })
     socket?.on("login", (user) => {
         addNewUser(user, socket?.id)
         socket.join(user)
         console.log(`${user} has login . . .`);
-        console.log({onlineUsers});
+        console.log({ onlineUsers });
     })
     socket.on("disconnet", () => {
         removeUser(socket?.id)
@@ -76,7 +76,7 @@ io?.on("connection", socket => {
                 let checkPath = path.resolve(`./original/${file}`)
 
                 const user = getUser(data)
-                console.log({checkPath});
+                console.log({ checkPath });
 
                 //create thumbnail
                 ffmpeg(checkPath).setFfmpegPath(ffmpegStatic).screenshots({
@@ -89,17 +89,17 @@ io?.on("connection", socket => {
                 ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:240')
                     .saveToFile(`./converted/240p-${file}`).on('progress', (pgress) => {
                         // setInterval(() => {
-                            const totalData = data
-                            const progress = pgress?.timemark
+                        const totalData = data
+                        const progress = pgress?.timemark
 
-                            console.log({totalData, progress});
-                            // let pergentace = (totalData - progress) / 100
-                            // console.log({pergentace});
-                            // console.log({user : user?.socketId});
-                            io?.to(user?.socketId).emit("sendProggress", pgress)
-                            io?.to(user?.socketId).emit("testupload", pgress)
+                        console.log({ totalData, progress });
+                        // let pergentace = (totalData - progress) / 100
+                        // console.log({pergentace});
+                        // console.log({user : user?.socketId});
+                        io?.to(user?.socketId).emit("sendProggress", pgress)
+                        io?.to(user?.socketId).emit("testupload", pgress)
                         // }, 1000)
-                        console.log({pgress});
+                        console.log({ pgress });
                     }).on('end', () => {
                         console.log(`240 HAS FINISHED`);
                         res.status(200).json({
@@ -146,101 +146,6 @@ io?.on("connection", socket => {
             }
         })
     })
-
-    app.post('/video', upload.single("video"), async (req, res) => {
-        console.log(req.body);
-        try {
-            const {
-                video_location = "",
-                description = "",
-                title = "",
-                tags = "",
-                is_movie = "",
-                is_stock = "",
-                is_short = "",
-                user_id = "",
-                thumbnail = "",
-            } = req.body
-
-            // req.body["240p"]
-
-            const file = req?.filename
-            let checkPath = path.resolve(`./original/${file}`)
-
-            const user = getUser(data)
-            console.log({checkPath});
-
-            //create thumbnail
-            ffmpeg(checkPath).setFfmpegPath(ffmpegStatic).screenshots({
-                timestamps: [1.00],
-                filename: `thubmnail-${file}.png`,
-                folder: './thumbnail'
-            })
-
-            //create 240p
-            ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:240')
-                .saveToFile(`./converted/240p-${file}`).on('progress', (pgress) => {
-                    // setInterval(() => {
-                        const totalData = data
-                        const progress = pgress?.timemark
-
-                        console.log({totalData, progress});
-                        // let pergentace = (totalData - progress) / 100
-                        // console.log({pergentace});
-                        // console.log({user : user?.socketId});
-                        io?.to(user?.socketId).emit("sendProggress", pgress)
-                        io?.to(user?.socketId).emit("testupload", pgress)
-                    // }, 1000)
-                    console.log({pgress});
-                }).on('end', () => {
-                    console.log(`240 HAS FINISHED`);
-                    res.status(200).json({
-                        msg: "Success",
-                        url: `${process.env.STORAGE_HOST}/converted/240p-${file}`
-                    })
-                })
-            //create 1080p video
-            ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:1080').saveToFile(`./converted/1080p-${file}`).on('progress', (progress) => {
-                console.log(`Processing: ${Math.floor(progress?.percent)}% done`);
-            }).on('end', () => {
-                console.log(`1080 HAS FINISHED`);
-            })
-
-            //create 720p video
-            ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:720').saveToFile(`./converted/720p-${file}`).on('progress', (progress) => {
-                if (progress.percent) {
-                    console.log(`Processing: ${Math.floor(progress.percent)}% done`);
-                }
-            }).on('end', () => {
-                console.log(`720 HAS FINISHED`);
-            })
-
-            //create 480p video
-            ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:480').saveToFile(`./converted/480p-${file}`).on('progress', (progress) => {
-                if (progress.percent) {
-                    console.log(`Processing: ${Math.floor(progress.percent)}% done`);
-                }
-            }).on('end', () => {
-                console.log(`480 HAS FINISHED`);
-            })
-
-            //create 360p video
-            ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:360').saveToFile(`./converted/360p-${file}`).on('progress', (progress) => {
-                if (progress.percent) {
-                    console.log(`Processing: ${Math.floor(progress.percent)}% done`);
-                }
-            }).on('end', () => {
-                console.log(`360 HAS FINISHED`);
-            })
-        } catch (error) {
-            console.log({ error });
-            res.status(400).json({ error })
-        }
-    })
-
-    app.get("/test", (req, res) => {
-        res.status(200).json({ msg: "Hello :)" })
-    })
 })
 
 app.use(cors({
@@ -262,8 +167,103 @@ server.listen(port, () => {
     console.log(`App listen on port ${port}`);
 })
 
-app.get("/", (req, res)=>{
+app.get("/", (req, res) => {
     res.status(200).json({
-        msg : "Wellcome to my simple API"
+        msg: "Wellcome to my simple API"
     })
+})
+
+app.post('/video', upload.single("video"), async (req, res) => {
+    console.log(req.body);
+    try {
+        const {
+            video_location = "",
+            description = "",
+            title = "",
+            tags = "",
+            is_movie = "",
+            is_stock = "",
+            is_short = "",
+            user_id = "",
+            thumbnail = "",
+        } = req.body
+
+        // req.body["240p"]
+
+        const file = req?.filename
+        let checkPath = path.resolve(`./original/${file}`)
+
+        const user = getUser(data)
+        console.log({ checkPath });
+
+        //create thumbnail
+        ffmpeg(checkPath).setFfmpegPath(ffmpegStatic).screenshots({
+            timestamps: [1.00],
+            filename: `thubmnail-${file}.png`,
+            folder: './thumbnail'
+        })
+
+        //create 240p
+        ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:240')
+            .saveToFile(`./converted/240p-${file}`).on('progress', (pgress) => {
+                // setInterval(() => {
+                const totalData = data
+                const progress = pgress?.timemark
+
+                console.log({ totalData, progress });
+                // let pergentace = (totalData - progress) / 100
+                // console.log({pergentace});
+                // console.log({user : user?.socketId});
+                io?.to(user?.socketId).emit("sendProggress", pgress)
+                io?.to(user?.socketId).emit("testupload", pgress)
+                // }, 1000)
+                console.log({ pgress });
+            }).on('end', () => {
+                console.log(`240 HAS FINISHED`);
+                res.status(200).json({
+                    msg: "Success",
+                    url: `${process.env.STORAGE_HOST}/converted/240p-${file}`
+                })
+            })
+        //create 1080p video
+        ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:1080').saveToFile(`./converted/1080p-${file}`).on('progress', (progress) => {
+            console.log(`Processing: ${Math.floor(progress?.percent)}% done`);
+        }).on('end', () => {
+            console.log(`1080 HAS FINISHED`);
+        })
+
+        //create 720p video
+        ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:720').saveToFile(`./converted/720p-${file}`).on('progress', (progress) => {
+            if (progress.percent) {
+                console.log(`Processing: ${Math.floor(progress.percent)}% done`);
+            }
+        }).on('end', () => {
+            console.log(`720 HAS FINISHED`);
+        })
+
+        //create 480p video
+        ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:480').saveToFile(`./converted/480p-${file}`).on('progress', (progress) => {
+            if (progress.percent) {
+                console.log(`Processing: ${Math.floor(progress.percent)}% done`);
+            }
+        }).on('end', () => {
+            console.log(`480 HAS FINISHED`);
+        })
+
+        //create 360p video
+        ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:360').saveToFile(`./converted/360p-${file}`).on('progress', (progress) => {
+            if (progress.percent) {
+                console.log(`Processing: ${Math.floor(progress.percent)}% done`);
+            }
+        }).on('end', () => {
+            console.log(`360 HAS FINISHED`);
+        })
+    } catch (error) {
+        console.log({ error });
+        res.status(400).json({ error })
+    }
+})
+
+app.get("/test", (req, res) => {
+    res.status(200).json({ msg: "Hello :)" })
 })
