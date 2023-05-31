@@ -192,10 +192,7 @@ app.post('/video', upload.single("video"), async (req, res) => {
 
         const file = req?.filename
         let checkPath = path.resolve(`./original/${file}`)
-
-        const user = getUser(data)
         console.log({ checkPath });
-
         //create thumbnail
         ffmpeg(checkPath).setFfmpegPath(ffmpegStatic).screenshots({
             timestamps: [1.00],
@@ -207,11 +204,6 @@ app.post('/video', upload.single("video"), async (req, res) => {
         ffmpeg().input(checkPath).outputOptions('-vf', 'scale=-2:240')
             .saveToFile(`./converted/240p-${file}`).on('progress', (pgress) => {
                 // setInterval(() => {
-                const totalData = data
-                const progress = pgress?.timemark
-
-                console.log({ totalData, progress });
-                console.log({ pgress });
             }).on('end', () => {
                 console.log(`240 HAS FINISHED`);
                 res.status(200).json({
