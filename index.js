@@ -211,12 +211,6 @@ app.post('/video', upload.single("video"), async (req, res) => {
                 const progress = pgress?.timemark
 
                 console.log({ totalData, progress });
-                // let pergentace = (totalData - progress) / 100
-                // console.log({pergentace});
-                // console.log({user : user?.socketId});
-                io?.to(user?.socketId).emit("sendProggress", pgress)
-                io?.to(user?.socketId).emit("testupload", pgress)
-                // }, 1000)
                 console.log({ pgress });
             }).on('end', () => {
                 console.log(`240 HAS FINISHED`);
