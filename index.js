@@ -6,14 +6,18 @@ const db = require('./src/config/db')
 const cors = require('cors')
 const app = express()
 const http = require('http')
+const https = require('https')
 const socketIo = require('socket.io')
 const upload = require('./src/multer/multer')
 const path = require('path')
 const ffmpegStatic = require('ffmpeg-static')
 const ffmpeg = require('fluent-ffmpeg')
 ffmpeg.setFfmpegPath(ffmpegStatic)
-const server = http.createServer(app)
+const server = http.createServer(app).listen(80)
 const Videos = require('./src/models/videos')
+
+
+https.createServer({}, app).listen(4433)
 
 const io = socketIo(server, {
     cors: {
@@ -163,9 +167,9 @@ db.authenticate().then(() => {
     console.log(`Database connected`);
 }).catch((err) => console.log({ err }))
 
-server.listen(port, () => {
-    console.log(`App listen on port ${port}`);
-})
+// server.listen(port, () => {
+//     console.log(`App listen on port ${port}`);
+// })
 
 app.get("/", (req, res) => {
     res.status(200).json({
